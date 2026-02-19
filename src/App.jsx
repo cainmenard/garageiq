@@ -1,27 +1,5 @@
 import { useState, useReducer, useEffect, useRef } from "react";
 
-const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&family=JetBrains+Mono:wght@400;600;700&family=Instrument+Serif:ital@0;1&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#06080c;--bg2:#0d1017;--bg3:#141921;--bg4:#181e28;--bg5:#1f2735;
-  --bdr:#1e2736;--bdr2:#2a3548;
-  --t1:#e8edf5;--t2:#8896ab;--t3:#4d5b72;--t4:#333f52;
-  --amber:#f0a832;--amber-d:rgba(240,168,50,.12);
-  --red:#ef4444;--red-d:rgba(239,68,68,.10);
-  --green:#22c55e;--green-d:rgba(34,197,94,.10);
-  --blue:#3b82f6;--blue-d:rgba(59,130,246,.10);
-  --orange:#f97316;--orange-d:rgba(249,115,22,.10);
-  --cyan:#06b6d4;--cyan-d:rgba(6,182,212,.10);
-  --fd:'Instrument Serif',Georgia,serif;--fb:'DM Sans',sans-serif;--fm:'JetBrains Mono',monospace;
-}
-body{background:var(--bg);color:var(--t1);font-family:var(--fb);-webkit-font-smoothing:antialiased}
-input,select,textarea,button{font-family:inherit}
-::selection{background:var(--amber);color:var(--bg)}
-.fade{animation:f .35s ease-out}@keyframes f{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-@keyframes p{0%,100%{opacity:1}50%{opacity:.4}}.pulse{animation:p 2s ease-in-out infinite}
-.scr::-webkit-scrollbar{width:4px}.scr::-webkit-scrollbar-track{background:transparent}.scr::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
-`;
 
 
 const INTERVAL_DEFS = {
@@ -842,7 +820,7 @@ function ChatPanel({ open, onClose, s }) {
 export default function App(){
   const[s,d]=useReducer(reducer,INIT);
   const[chatOpen,setChatOpen]=useState(false);
-  return <><style>{CSS}</style><div style={{fontFamily:"var(--fb)"}}>
+  return <><div style={{fontFamily:"var(--fb)"}}>
     <Dash s={s} d={d}/>
     <button onClick={()=>setChatOpen(true)} className="fixed bottom-6 right-6 z-30 h-12 rounded-2xl bg-[var(--amber)] text-[var(--bg)] shadow-lg shadow-[rgba(240,168,50,.25)] hover:brightness-110 hover:scale-[1.03] transition-all cursor-pointer flex items-center gap-2.5 px-5 group"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span className="font-bold text-sm tracking-tight" style={{fontFamily:"var(--fm)"}}>MechanicAI</span></button>
     <ChatPanel open={chatOpen} onClose={()=>setChatOpen(false)} s={s}/>

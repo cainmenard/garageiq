@@ -257,6 +257,48 @@ const INIT = {
   modal:null, codeDetail:null, guideDetail:null, preselect:null, guideProgress:{}, editRecord:null,
 };
 
+// ── Persistence ───────────────────────────────────────
+const STORAGE_KEY="garageiq_state";
+const STORAGE_VERSION=1;
+const PERSISTENT_KEYS=["vehicle","codes","records","mileageLog","guideProgress"];
+
+function loadState(initialState){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(!raw) return initialState;
+    const parsed=JSON.parse(raw);
+    const merged={...initialState};
+    for(const key of PERSISTENT_KEYS){
+      if(parsed[key]!==undefined) merged[key]=parsed[key];
+    }
+    // Vehicle: keep INIT static specs, overlay only dynamic fields from storage
+    if(parsed.vehicle){
+      merged.vehicle={...initialState.vehicle, mileage:parsed.vehicle.mileage??initialState.vehicle.mileage};
+    }
+    return merged;
+  }catch(e){
+    console.warn("GarageIQ: Failed to load saved data, using defaults.",e);
+    return initialState;
+  }
+}
+
+function saveState(state){
+  try{
+    const toSave={_version:STORAGE_VERSION};
+    for(const key of PERSISTENT_KEYS) toSave[key]=state[key];
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(toSave));
+  }catch(e){
+    console.warn("GarageIQ: Failed to save data.",e);
+  }
+}
+
+if(typeof window!=="undefined"){
+  window.__garageiq_clearData=()=>{
+    try{localStorage.removeItem(STORAGE_KEY);window.location.reload();}
+    catch(e){console.warn("GarageIQ: Failed to clear data.",e);}
+  };
+}
+
 function reducer(s,a){
   switch(a.type){
     case "TAB": return {...s,tab:a.tab,codeDetail:null,guideDetail:null};
@@ -951,7 +993,8 @@ function ChatPanel({ open, onClose, s }) {
 }
 
 export default function App(){
-  const[s,d]=useReducer(reducer,INIT);
+  const[s,d]=useReducer(reducer,INIT,loadState);
+  useEffect(()=>{saveState(s);},[s]);
   const[chatOpen,setChatOpen]=useState(false);
   return <><style>{CSS}</style>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,500;9..40,700;9..40,800&family=JetBrains+Mono:wght@400;600;700&family=Instrument+Serif&display=swap" rel="stylesheet"/>
